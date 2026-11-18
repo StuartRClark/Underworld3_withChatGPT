@@ -1,48 +1,43 @@
-# From prompts to mantle flow
-
-**Building an Underworld3 model with GPT-6 Luna on Linux**<br>
-**Author:** @StuartRClark (GitHub)<br>
-**AI assistant:** GPT-6 Luna<br>
-**18 November 2026 · Draft technical note**
-
-*This local worked example documents a prompt-driven modeling workflow. It is
-written in the concise style of the Underworld Technical Notes, but is not an
-official Underworld publication or a validated benchmark.*
+---
+# From prompts to mantle flow, building an Underworld3 model with GPT-6
+```Date: 2026-11-18```
+```
+Stuart Clark (orcid: 0000-0002-0495-670X)
+University of New South Wales
+```
+```
+Keywords: GPT-6 Luna, prompt engineering, mantle convection
+```
 
 ## Abstract
+This note records how GPT-6 Luna was used in a Linux environment to create, run, 
+inspect and refine an Underworld3 mantle-convection notebook. The accompanying 
+notebook solves one 30 Ma annulus calculation with Underworld3's native Navier–Stokes 
+and advection–diffusion systems. The notebook, three output figures, and a copy-ready 
+final prompt are included. This is a coarse test calculation for learning and reproducibility 
+so it is not necessarily a mesh-converged scientific result.
 
-This note records how GPT-6 Luna was used in a Linux environment to create,
-run, inspect, and refine an Underworld3 mantle-convection notebook. It describes
-the workstation and software environment, the official Underworld3 installation
+The notebook describes the workstation and software environment, the official Underworld3 installation
 route, the commands used to enter the Pixi runtime and start JupyterLab, and the
 prompt iterations that turned an initial modeling request into a runnable
-example. The accompanying notebook solves one 30 Ma annulus calculation with
-Underworld3's native Navier–Stokes and advection–diffusion systems. The notebook,
-three output figures, and a copy-ready final prompt are included. This is a
-coarse test calculation for learning and reproducibility; it is not a
-mesh-converged scientific result.
-
-**Keywords:** GPT-6 Luna, prompt engineering, Underworld3, Linux, JupyterLab,
-mantle convection, reproducible modeling
-
+example. 
 ## 1. Purpose and workflow
 
-The aim was to use prompts to produce a complete Underworld3 example rather
-than a standalone conceptual description. The work proceeded through four
-practical stages:
+The aim was to use prompts to install and produce a complete Underworld3 example.
+The work proceeded through four practical stages:
 
-1. Define the mantle-annulus geometry, temperature profile, viscosity layers,
-   boundary velocities, and desired 30 Ma run.
-2. Clarify that momentum must be solved by Underworld3 at every timestep and
-   temperature must then be advected and diffused.
-3. Refine the boundary specification and figures so the notebook shows four
-   discrete sector speeds and continuous-looking interpolated field plots.
-4. Run the notebook, inspect its outputs and solver messages, and make the
-   coarse-mesh GAMG choice explicit.
+1. Try to define an initial prompt that would install Underworld3 and create a mantle-annulus geometry, temperature profile, viscosity layers, boundary velocities, and desired 30 Ma run.
+2. Check the output to see that the initial conditions and run parameters were correctly interpreted
+3. Generate a prompt that could replicate the results in a 'clean environment'
+4. Create a note to explain what was achieved. 
 
 The result is an executed Jupyter notebook with its outputs saved in the file.
 The technical note presents the system setup and prompt history, then records
 the model equations, parameters, results, and limitations.
+
+### Use of prompts and generated material
+The prompts, instructions, code, notebooks and outputs in this repository are provided “as is” for educational and illustrative purposes. They may be incomplete, inaccurate, out of date or produce unexpected results. You are responsible for reviewing and validating them before use, and for deciding whether they are suitable for your environment and purpose. Before running or sharing anything, ensure you have appropriate safeguards in place. These may include verified backups, a controlled environment, suitable access controls, and checks on file changes, permissions, data handling and sharing. Do not provide confidential, personal or otherwise restricted material to an AI service, or grant software access, unless you have confirmed that doing so is authorized and appropriately protected. You are responsible for assessing and managing the risks of your use, including possible data loss, alteration, exposure, unauthorized access or sharing.
+To the maximum extent permitted by applicable law, the authors and contributors disclaim warranties and responsibility for losses or damage arising from the use, modification or distribution of this material. Nothing in this disclaimer excludes or limits any right or liability that applicable law does not allow to be excluded or limited.
 
 ## 2. System and software used
 
@@ -63,90 +58,23 @@ system and can differ from the physical host allocation.
 | MPI run size | One rank |
 | Environment features | Runtime visualization and notebook dependencies; no AMR build |
 
-The Underworld3 `./uw` wrapper was used to select the project's Pixi runtime.
-The notebook ran in that environment, so a separate system-wide Jupyter or
-Python installation was not needed. The wrapper printed an advisory that the
-Pixi lock file uses format v6; this did not prevent the notebook server or
-simulation from running.
+## 3. Prompt development
 
-## 3. Installing, entering the runtime, and launching JupyterLab
-
-### 3.1 Fresh Underworld3 installation
-
-For a new Linux checkout, the [official Underworld3 Quick Install](https://underworld3.readthedocs.io/en/latest/beginner/installation.html)
-recommends the `./uw` setup workflow:
-
-```bash
-git clone https://github.com/underworldcode/underworld3.git
-cd underworld3
-./uw setup
-```
-
-For this example, select **No AMR**, **Runtime**, and the platform-default MPI
-when prompted, then allow the setup process to install dependencies and build
-Underworld3. The Runtime environment includes JupyterLab and visualization
-packages. The official guide describes other environment choices and
-alternatives.
-
-### 3.2 Opening the runtime for this example
-
-For the run documented here, the Underworld3 checkout was in the
-`underworld3-runtime` subdirectory beside the notebook. From the workspace
-root, activate the runtime with:
-
-```bash
-./underworld3-runtime/uw shell
-```
-
-To start JupyterLab directly from that workspace root:
-
-```bash
-./underworld3-runtime/uw jupyter lab annulus_mantle_convection.ipynb
-```
-
-The target GitHub repository contains the notebook and output assets, not a
-second copy of the full Underworld3 source checkout. If you clone this example
-repository separately, install or locate Underworld3 in its own checkout and
-launch the notebook by passing its path to that checkout's wrapper:
-
-```bash
-cd /path/to/underworld3
-./uw shell
-./uw jupyter lab /path/to/Underworld3_withChatGPT/annulus_mantle_convection.ipynb
-```
-
-The wrapper starts JupyterLab in the Pixi Runtime. If the default local port is
-occupied, JupyterLab selects another available port; in the recorded session
-it used port 8889. The notebook's Install section contains these two layouts.
-
-## 4. Prompt development
-
-Prompt refinement was driven by inspecting the notebook and clarifying which
+ChatGPT Luna-6 installed the run Prompt refinement was driven by inspecting the notebook and clarifying which
 parts of the request described physical boundary conditions, time integration,
 and display choices. The excerpts below follow the order of the exchange.
+Edits to the prompts have been made to make it more human-readable. 
 
 | Stage | Prompt excerpt | What it changed |
 | --- | --- | --- |
-| Initial model request | “Build a python notebook (installing all prerequisites and setting up a notebook server) that installs and runs Underworld3 … an annulus mantle convection model … [with] a standard depth curve … layered viscosity … around 30 Ma.” | Established the model, installation workflow, and tables as one deliverable. |
-| Time integration | “It seems like the stokes flow is run at each 10 Ma timestep but in reality we need to run the Navier Stokes solve from within UW3 itself and advect the temperatures.” | Required the native Underworld3 momentum solve and temperature transport at every timestep. |
+| Initial model request | “Build a python notebook (installing all prerequisites and setting up a notebook server) that installs and runs Underworld3 (www.underworldproject.org) and runs an annulus mantle convection model with surface velocities in 4 equally spaced parts and 2 sets of divergent/convergent velocities 1cm/yr (2cm/yr total divergence) and 4cm/yr (8 cm/yr total divergence). Mantle temperature should follow a standard depth curve from 0 degrees Celsius at the surface. Viscosity of the lithosphere can be 10^22 Pas while the asthenosphere can be 10^19 Pas and the lower mantle 10^21 Pas. Run a test simulations that lasts around 30 Ma. Create a table of all the parameters, equations and initial states and final states in the notebook.” | Established the model, installation workflow and tables as one deliverable but only ran the model as a series of Stokes solves. |
+| Time integration | “It seems like the stokes flow is run at each timestep but in reality we need to run the Navier-Stokes solve from within UW3 itself and advect the temperatures.” | This required a correct advection-diffusion solution from Underworld3 however, the velocity condition at the surface boundary did not lead to subduction because the boundary condition has been made to vary smoothly rather than discretely like we see in plates|
 | Surface boundary conditions | “The velocities vary across the surface smoothly. Rather they should have discrete velocities such that the divergence velocity and convergent velocity across the 4 boundaries around the circle are actually as specified.” | Clarified that prescribed boundary values should be discrete sectors, not a smooth angular velocity curve. |
-| Speed interpretation and figures | “The ‘peak surface speed’ shows that two different models, whereas I imagined that the velocity should be 2cm/yr anticlockwise, 2cm/yr clockwise, 8 cm/yr anticlockwise, 8cm/yr clockwise. Make the displays continuous rather than hexagon.” | Made the four speeds one model, fixed the sign convention, and separated smooth field rendering from the discrete boundary profile. |
+| Speed interpretation and figures | “The ‘peak surface speed’ shows that two different models, whereas I imagined that the velocity should be 2cm/yr anticlockwise, 2cm/yr clockwise, 8 cm/yr anticlockwise, 8cm/yr clockwise. Also, the plots should display as continuous rather than hexagon points.” | Made the four speeds one model, fixed the sign convention, and separated smooth field rendering from the discrete boundary profile. |
 | Reusable prompt | “I would like a single prompt that would create the final output from the last model that I could share as a sample prompt for getting started with underworld3.” | Produced the copy-ready prompt in Section 7. |
 | Solver message | After inspecting the run output, the coarse-mesh GAMG fallback was made explicit in the notebook. | Removed a misleading fallback warning without changing the solver choice or recorded model results. |
 
-The key scientific distinction is between **sector speeds** and **relative
-velocity jumps at sector junctions**. The selected sector speeds
-`(+2, −2, +8, −8) cm/yr` do not produce uniform relative jumps of 2 and
-8 cm/yr. Prompting made that consequence visible and the notebook reports the
-actual signed jumps rather than implying both specifications were met.
-
-The display request also needed a precise interpretation: the solved fields
-are interpolated onto a fine plotting grid to remove the polygonal look, while
-the surface-velocity plot remains a four-step profile so the prescribed values
-stay visible. Plot interpolation changes no solved values and adds no mesh
-resolution.
-
-## 5. Model definition and numerical method
+## 4. Model definition and numerical method
 
 The model is a two-dimensional annulus with inner radius 3480 km, outer radius
 6371 km, and mantle-thickness length scale 2891 km. Its outer boundary has
@@ -189,22 +117,15 @@ temperature by 3000°C, the velocity scale is 289.1 cm/yr, dimensionless
 thermal diffusivity is 3.776 × 10⁻⁶, inertia coefficient is
 8.740 × 10⁻¹⁹, and buoyancy coefficient `Ra·D` is 3.776 × 10⁻².
 
-The nondimensional momentum equation uses a temperature anomaly relative to
+The non-dimensional momentum equation uses a temperature anomaly relative to
 the prescribed radial reference geotherm:
 
 $$
-\mathrm{Re}\left[\partial_t \mathbf{u} + (\mathbf{u}\cdot\nabla)\mathbf{u}\right]
-- \nabla\cdot\left[2\eta\,\boldsymbol{\epsilon}(\mathbf{u})\right]
-+ \nabla p
-= \mathrm{Ra}\,D\,(T-T_{\mathrm{ref}})\,\hat{\mathbf{r}},
+\symup{Re}\left[\partial_t \mathbf{u} + (\mathbf{u}\cdot\nabla)\mathbf{u}\right] - \nabla\cdot\left[2\eta\,\boldsymbol{\epsilon}(\mathbf{u})\right] + \nabla p = \symup{Ra}\,D\,(T-T_{\symup{ref}})\,\hat{\mathbf{r}},
 $$
 
 $$
-\nabla\cdot\mathbf{u}=0, \qquad
-\partial_t T + \mathbf{u}\cdot\nabla T = D\nabla^2 T,
-\qquad
-\boldsymbol{\epsilon}(\mathbf{u})=
-\tfrac12\left(\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T}\right).
+\nabla\cdot\mathbf{u}=0, \qquad\partial_t T + \mathbf{u}\cdot\nabla T = D\nabla^2 T, \qquad\boldsymbol{\epsilon}(\mathbf{u})=\tfrac12\left(\nabla\mathbf{u}+\nabla\mathbf{u}^{\mathsf T}\right).
 $$
 
 At each timestep, Underworld3's native `uw.systems.NavierStokes` solves
@@ -213,9 +134,8 @@ advects and diffuses temperature on the fixed mesh. The notebook uses the
 Eulerian SUPG BDF2 advection–diffusion formulation and a maximum 0.5 Ma step.
 For the single-level coarse mesh, it explicitly sets
 `navier_stokes.preconditioner = "gamg"`. A refined production calculation
-should build a geometric hierarchy (for example, with at least one uniform
-refinement level) and use the automatic preconditioner; this example is not a
-mesh- or timestep-convergence study.
+should probably build a geometric hierarchy (for example, with at least one uniform
+refinement level) and use the automatic preconditioner.
 
 The implied one-sided changes in tangential velocity, measured in the
 increasing-angle direction, are:
@@ -232,7 +152,7 @@ shared junction, while sector interiors retain the prescribed velocities. If
 the physical requirement is instead a uniform 2 or 8 cm/yr relative jump at
 each selected boundary, the sector values must be redesigned.
 
-## 6. Notebook outputs and run results
+## 5. Notebook outputs and run results
 
 The complete executed notebook is the primary reproducibility artifact:
 
@@ -348,7 +268,9 @@ and distinguish errors from non-fatal solver or environment messages.
 ## 8. Reproducibility, deliverables, and scope
 
 The notebook is the executable record; this note explains the prompt workflow
-and summarizes the saved outputs. The [complete note bundle](annulus_mantle_convection_note_bundle.zip) contains this note, the executed notebook, and the three PNG figures. To reproduce the run, install Underworld3 by
+and summarizes the saved outputs. The [complete note bundle](annulus_mantle_convection_note_bundle.zip) contains this note, the executed notebook, and the three PNG figures. 
+
+To run *without ChatGPT* install Underworld3 by
 following the [official Quick Install](https://underworld3.readthedocs.io/en/latest/beginner/installation.html),
 activate the Runtime environment, start JupyterLab with `./uw jupyter lab`,
 and execute all cells. The [Eulerian Navier–Stokes guide](https://underworld3.readthedocs.io/en/latest/advanced/eulerian-navier-stokes.html),
@@ -356,10 +278,4 @@ and execute all cells. The [Eulerian Navier–Stokes guide](https://underworld3.
 and [coupled convection tutorial](https://underworld3.readthedocs.io/en/latest/beginner/tutorials/8-Timestepping-coupled.html)
 provide relevant API context.
 
-The run is suitable as a prompt-engineering and notebook-structure example.
-It is not a validated benchmark. A scientific study should resolve whether
-surface-sector speeds or relative junction jumps are the intended boundary
-conditions, then conduct mesh and timestep convergence checks. The Underworld
-[Technical Notes series](https://www.underworldcode.org/notes/) and its
-[submission guidance](https://www.underworldcode.org/submit/) describe the
-format this local worked example takes as inspiration.
+
